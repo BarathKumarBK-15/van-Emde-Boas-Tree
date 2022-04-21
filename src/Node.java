@@ -7,6 +7,8 @@ public class Node {
     public Node summary;
     public Node[] children;
     public boolean is_summary;
+    public int range_min;
+    public int range_max;
 
     Node() {
         universe_size = 0;
@@ -15,6 +17,9 @@ public class Node {
         summary = null;
         children = null;
         is_summary = false;
+        range_max = -1;
+        range_min = -1;
+
     }
 
     Node(int universe_size) {
@@ -22,6 +27,8 @@ public class Node {
         this.min = -1;
         this.max = -1;
         this.is_summary = false;
+        this.range_min = 0;
+        this.range_max = this.universe_size - 1;
 
         if(universe_size == 2) {
             this.summary = null;
@@ -29,10 +36,39 @@ public class Node {
 
         } else {
             this.children = new Node[higherSQRT(universe_size)];
-            this.summary = new Node(lowerSQRT(universe_size), true);
+            this.summary = new Node(higherSQRT(universe_size), true);
 
             for(int i = 0; i < higherSQRT(universe_size); i++) {
-                children[i] = new Node(lowerSQRT(universe_size));
+                int r_min = lowerSQRT(this.universe_size) * i + this.range_min;
+                int r_max = lowerSQRT(this.universe_size) * (i + 1) + this.range_min - 1;
+                children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
+
+            }
+
+        }
+
+    }
+
+    Node(int universe_size, int range_min, int range_max) {
+        this.universe_size = universe_size;
+        this.min = -1;
+        this.max = -1;
+        this.is_summary = false;
+        this.range_min = range_min;
+        this.range_max = range_max;
+
+        if(universe_size == 2) {
+            this.summary = null;
+            this.children = null;
+
+        } else {
+            this.children = new Node[higherSQRT(universe_size)];
+            this.summary = new Node(higherSQRT(universe_size), true);
+
+            for(int i = 0; i < higherSQRT(universe_size); i++) {
+                int r_min = lowerSQRT(this.universe_size) * i + this.range_min;
+                int r_max = lowerSQRT(this.universe_size) * (i + 1) + this.range_min - 1;
+                children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
 
             }
 
@@ -45,6 +81,8 @@ public class Node {
         this.min = -1;
         this.max = -1;
         this.is_summary = is_summary;
+        this.range_min = 0;
+        this.range_max = this.universe_size - 1;
 
         if(universe_size == 2) {
             this.summary = null;
@@ -52,10 +90,12 @@ public class Node {
 
         } else {
             this.children = new Node[higherSQRT(universe_size)];
-            this.summary = new Node(lowerSQRT(universe_size), true);
+            this.summary = new Node(higherSQRT(universe_size), true);
 
             for(int i = 0; i < higherSQRT(universe_size); i++) {
-                children[i] = new Node(lowerSQRT(universe_size));
+                int r_min = lowerSQRT(this.universe_size) * i + this.range_min;
+                int r_max = lowerSQRT(this.universe_size) * (i + 1) + this.range_min - 1;
+                children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
 
             }
 
@@ -92,9 +132,10 @@ public class Node {
         if(this.is_summary) {
             return s1 + "Summary Node\n" + s2 + s3 + s4 + s5;
 
-        }
+        } else {
+            return s1 + "Cluster Represents: " + this.range_min + " - " + this.range_max + "\n" + s2 + s3 + s4 + s5;
 
-        return s1 + s2 + s3 + s4 + s5;
+        }
 
     }
 
@@ -103,6 +144,10 @@ public class Node {
 
         if(this.is_summary) {
             System.out.println("Summary Node");
+
+        } else {
+            System.out.println("Cluster Represents: " + this.range_min + " - " + this.range_max);
+
         }
 
         System.out.println("Universe Size : " + this.universe_size);
@@ -120,10 +165,61 @@ public class Node {
         }
 
         if(this.children != null) {
-            for(int i = 0; i < this.children.length; i++) {
-                children[i].print();
+            for(Node child : this.children) {
+                child.print();
 
             }
+
+        }
+
+    }
+
+    public void insert(int value) {
+        if(value < 0 || value >= this.universe_size) {
+            System.out.println("<-- Invalid entry. Value cannot be inserted -->");
+            return;
+        }
+
+        if(this.min == -1) {
+            this.min = value;
+            this.max = value;
+            return;
+
+        }
+
+        if(this.min == value) {
+            return;
+
+        }
+
+        if(value < this.min) {
+            int temp = this.min;
+            this.min = value;
+            if(this.universe_size != 2) {
+                this.insert(temp);
+
+            }
+
+            return;
+
+        }
+
+        if(value > this.max) {
+            this.max = value;
+            if(this.universe_size != 2) {
+                   this.insert(value);
+
+            }
+
+            return;
+
+        }
+
+        if(this.universe_size != 2) {
+            int new_node = value / lowerSQRT(this.universe_size);
+            int new_value = value % lowerSQRT(this.universe_size);
+            this.summary.insert(new_node);
+            this.children[new_node].insert(new_value);
 
         }
 
