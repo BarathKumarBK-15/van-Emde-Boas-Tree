@@ -9,6 +9,7 @@ public class Node {
     public boolean is_summary;
     public int range_min;
     public int range_max;
+    public Node parent;
 
     Node() {
         universe_size = 0;
@@ -64,6 +65,7 @@ public class Node {
         } else {
             this.children = new Node[higherSQRT(universe_size)];
             this.summary = new Node(higherSQRT(universe_size), true);
+            this.summary.parent = this;
 
             for(int i = 0; i < higherSQRT(universe_size); i++) {
                 int r_min = lowerSQRT(this.universe_size) * i + this.range_min;
@@ -87,7 +89,6 @@ public class Node {
         if(universe_size == 2) {
             this.summary = null;
             this.children = null;
-
         } else {
             this.children = new Node[higherSQRT(universe_size)];
             this.summary = new Node(higherSQRT(universe_size), true);
@@ -98,7 +99,6 @@ public class Node {
                 children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
 
             }
-
         }
 
     }
@@ -225,4 +225,29 @@ public class Node {
 
     }
 
+    private int clusterNum(int value){
+        return value/lowerSQRT(universe_size);
+    }
+
+    private int position(int value){
+        return value%lowerSQRT(universe_size);
+    }
+
+    public int getMin(){
+        return this.min;
+    }
+
+    public int getMax(){
+        return this.max;
+    }
+
+    public boolean search(int value){
+        if(value<min || value> max) return false;
+        if(universe_size==2){
+            if(value==0 && min!=-1) return true;
+            return value == 1 && max != -1;
+        }
+        if(min == value || max == value) return true;
+        return this.children[clusterNum(value)].search(position(value));
+    }
 }
