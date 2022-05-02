@@ -12,8 +12,6 @@ public class Main {
         vEB.insert(15);
         System.out.println("A few values have been inserted!");
 
-        System.out.println(vEB.children[0]);
-
         vEB.print();
 
     }

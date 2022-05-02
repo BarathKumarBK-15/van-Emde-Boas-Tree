@@ -176,6 +176,7 @@ public class Node {
         if(value < 0 || value >= this.universe_size) {
             System.out.println("<-- Invalid entry. Value cannot be inserted -->");
             return;
+
         }
 
         if(this.min == -1) {
@@ -242,65 +243,126 @@ public class Node {
 
     private int clusterNum(int value){
         return value/lowerSQRT(universe_size);
+
     }
 
     private int position(int value){
         return value%lowerSQRT(universe_size);
+
     }
 
     public int getMin(){
         return this.min;
+
     }
 
     public int getMax(){
         return this.max;
+
     }
 
-    public boolean search(int value){
-        if(value<min || value> max) return false;
-        if(universe_size==2) return value == min || value == max;
-        if(min == value || max == value) return true;
+    public boolean search(int value) {
+        if(value < min || value > max) {
+            return false;
+
+        }
+
+        if(universe_size == 2) {
+            return value == min || value == max;
+
+        }
+
+        if(min == value || max == value) {
+            return true;
+
+        }
+
         return this.children[clusterNum(value)].search(position(value));
     }
 
-    public int predecessor(int value){
-        if(value<0||value>range_max){
+    public int predecessor(int value) {
+        if(value < 0 || value > range_max) {
             throw new ArrayIndexOutOfBoundsException("The range of values should be between "
-                    +this.range_min+" - "+this.range_max);
+                    + this.range_min + " - " + this.range_max);
+
         }
-        if(universe_size==2){
-            if(value==1&&max==1&&min==0) return 0;
+
+        if(universe_size == 2) {
+            if(value == 1 && max == 1 && min==0){
+                return 0;
+
+            }
+
             return -1;
         }
-        if(value<=min) return -1;
-        if(value>max) return max;
-        int start_num = clusterNum(value);
-        int pred = children[start_num--].predecessor(position(value));
-        while(pred==-1 && start_num>-1){
-            pred = children[start_num].getMax();
-            start_num--;
+
+        if(value <= min) {
+            return -1;
+
         }
-        if(pred==-1) pred = this.min;
-        return pred+(start_num+1)*lowerSQRT(universe_size);
+
+        if(value > max){
+            return max;
+
+        }
+
+        int start_num = clusterNum(value);
+        int pred = children[start_num --].predecessor(position(value));
+
+        while(pred == -1 && start_num > -1) {
+            pred = children[start_num].getMax();
+            start_num --;
+
+        }
+
+        if(pred == -1) {
+            pred = this.min;
+
+        }
+
+        return pred + (start_num+ 1 ) * lowerSQRT(universe_size);
     }
 
-    public int successor(int value){
-        if(value<0||value>range_max){
+    public int successor(int value) {
+        if(value < 0 || value > range_max) {
             throw new ArrayIndexOutOfBoundsException("The range of values should be between "
-                    +this.range_min+" - "+this.range_max);
+                    + this.range_min + " - " + this.range_max);
+
         }
-        if(universe_size==2){
-            if(value==0&&max==1) return 1;
+
+        if(universe_size == 2) {
+            if(value == 0 && max == 1) {
+                return 1;
+
+            }
+
             return -1;
+
         }
-        if(value>= max) return -1;
-        if(value<min) return min;
+
+        if(value >= max) {
+            return -1;
+
+        }
+
+        if(value < min) {
+            return min;
+
+        }
+
         int start_num = clusterNum(value);
-        int successor = children[start_num++].successor(position(value));
-        while (successor==-1 && start_num< children.length){
-            successor = children[start_num++].getMin();
+        int successor = children[start_num ++].successor(position(value));
+
+        while(successor == -1 && start_num < children.length) {
+            successor = children[start_num ++].getMin();
+
         }
-        if(successor==-1) successor = this.max;
-        return successor+(start_num-1)*lowerSQRT(universe_size);
+
+        if(successor == -1) {
+            successor = this.max;
+
+        }
+
+        return successor + (start_num - 1) * lowerSQRT(universe_size);
     }
 }
