@@ -284,4 +284,23 @@ public class Node {
         return pred+(start_num+1)*lowerSQRT(universe_size);
     }
 
+    public int successor(int value){
+        if(value<0||value>range_max){
+            throw new ArrayIndexOutOfBoundsException("The range of values should be between "
+                    +this.range_min+" - "+this.range_max);
+        }
+        if(universe_size==2){
+            if(value==0&&max==1) return 1;
+            return -1;
+        }
+        if(value>= max) return -1;
+        if(value<min) return min;
+        int start_num = clusterNum(value);
+        int successor = children[start_num++].successor(position(value));
+        while (successor==-1 && start_num< children.length){
+            successor = children[start_num++].getMin();
+        }
+        if(successor==-1) successor = this.max;
+        return successor+(start_num-1)*lowerSQRT(universe_size);
+    }
 }
