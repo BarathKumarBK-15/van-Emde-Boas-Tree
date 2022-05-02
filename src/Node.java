@@ -262,4 +262,26 @@ public class Node {
         if(min == value || max == value) return true;
         return this.children[clusterNum(value)].search(position(value));
     }
+
+    public int predecessor(int value){
+        if(value<0||value>range_max){
+            throw new ArrayIndexOutOfBoundsException("The range of values should be between "
+                    +this.range_min+" - "+this.range_max);
+        }
+        if(universe_size==2){
+            if(value==1&&max==1&&min==0) return 0;
+            return -1;
+        }
+        if(value<=min) return -1;
+        if(value>max) return max;
+        int start_num = clusterNum(value);
+        int pred = children[start_num--].predecessor(position(value));
+        while(pred==-1 && start_num>-1){
+            pred = children[start_num].getMax();
+            start_num--;
+        }
+        if(pred==-1) pred = this.min;
+        return pred+(start_num+1)*lowerSQRT(universe_size);
+    }
+
 }
