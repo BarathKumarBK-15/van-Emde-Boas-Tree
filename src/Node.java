@@ -30,6 +30,7 @@ public class Node {
         this.is_summary = false;
         this.range_min = 0;
         this.range_max = this.universe_size - 1;
+        this.parent = this;
 
         if(universe_size == 2) {
             this.summary = null;
@@ -45,7 +46,6 @@ public class Node {
                 children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
 
             }
-
         }
 
     }
@@ -73,7 +73,6 @@ public class Node {
                 children[i] = new Node(lowerSQRT(universe_size), r_min, r_max);
 
             }
-
         }
 
     }
@@ -144,10 +143,10 @@ public class Node {
 
         if(this.is_summary) {
             System.out.println("Summary Node");
-
+            System.out.println("Parent Node: " + parent.range_min+" - "+ parent.range_max);
         } else {
             System.out.println("Cluster Represents: " + this.range_min + " - " + this.range_max);
-
+            System.out.println("Parent Node: " + parent.range_min+" - "+ parent.range_max);
         }
 
         System.out.println("Universe Size : " + this.universe_size);
@@ -243,10 +242,7 @@ public class Node {
 
     public boolean search(int value){
         if(value<min || value> max) return false;
-        if(universe_size==2){
-            if(value==0 && min!=-1) return true;
-            return value == 1 && max != -1;
-        }
+        if(universe_size==2) return value == min || value == max;
         if(min == value || max == value) return true;
         return this.children[clusterNum(value)].search(position(value));
     }
