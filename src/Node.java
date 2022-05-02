@@ -48,6 +48,7 @@ public class Node {
             }
         }
 
+        assignParent(this);
     }
 
     Node(int universe_size, int range_min, int range_max) {
@@ -143,10 +144,8 @@ public class Node {
 
         if(this.is_summary) {
             System.out.println("Summary Node");
-            System.out.println("Parent Node: " + parent.range_min+" - "+ parent.range_max);
         } else {
             System.out.println("Cluster Represents: " + this.range_min + " - " + this.range_max);
-            System.out.println("Parent Node: " + parent.range_min+" - "+ parent.range_max);
         }
 
         System.out.println("Universe Size : " + this.universe_size);
@@ -222,6 +221,23 @@ public class Node {
 
         }
 
+    }
+
+    private void assignParent(Node parent){
+        if(this.summary != null) {
+            summary.parent = parent;
+            summary.assignParent(summary);
+
+        }
+
+        if(this.children != null) {
+            for(Node child : this.children) {
+                child.parent=parent;
+                child.assignParent(child);
+
+            }
+
+        }
     }
 
     private int clusterNum(int value){
