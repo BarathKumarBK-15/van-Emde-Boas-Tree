@@ -288,7 +288,7 @@ public class Node {
         }
 
         if(universe_size == 2) {
-            if(value == 1 && max == 1 && min==0){
+            if(value == 1 && max == 1 && min == 0){
                 return 0;
 
             }
@@ -366,52 +366,67 @@ public class Node {
         return successor + (start_num - 1) * lowerSQRT(universe_size);
     }
 
-    public boolean isEmpty(){
-        if(min!=-1) return false;
-        for(Node child: children){
-            if(child.min!=-1){
+    public boolean isEmpty() {
+        if(min != -1) {
+            return false;
+
+        }
+
+        for(Node child: children) {
+            if(child.min != -1) {
                 return false;
             }
+
         }
+
         return true;
     }
 
     public boolean delete(int value){
-        if(value>max||value<min){
+        if(value > max || value < min){
             return false;
+
         }
-        if(universe_size==2){
-            if(value==min&&value==max){
+        if(universe_size == 2){
+            if(value == min && value == max) {
                 min=-1;
                 max=-1;
                 return true;
+
             }
-            if(value==min){
+
+            if(value == min) {
                 min = max;
                 return false;
+
             }
-            if(value == max){
+
+            if(value == max) {
                 max = min;
                 return false;
+
             }
         }
 
-        if(value==min&&value==max){
+        if(value == min && value == max) {
             min=-1;
             max=-1;
             return true;
-        }
-        else if(value==min){
+
+        } else if(value == min) {
             min = successor(value);
             value = min;
-        }
-        else if(value==max){
+
+        } else if(value == max) {
             max = predecessor(value);
+
         }
         boolean empty = children[clusterNum(value)].delete(position(value));
-        if(empty){
+        if(empty) {
             summary.delete(clusterNum(value));
+
         }
+        
         return isEmpty();
     }
 }
