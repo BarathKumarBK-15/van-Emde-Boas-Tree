@@ -9,7 +9,6 @@ public class Node {
     public boolean is_summary;
     public int range_min;
     public int range_max;
-    public Node parent;
 
     Node() {
         universe_size = 0;
@@ -30,7 +29,6 @@ public class Node {
         this.is_summary = false;
         this.range_min = 0;
         this.range_max = this.universe_size - 1;
-        this.parent = this;
 
         if(universe_size == 2) {
             this.summary = null;
@@ -47,8 +45,6 @@ public class Node {
 
             }
         }
-
-        assignParent(this);
     }
 
     Node(int universe_size, int range_min, int range_max) {
@@ -66,7 +62,6 @@ public class Node {
         } else {
             this.children = new Node[higherSQRT(universe_size)];
             this.summary = new Node(higherSQRT(universe_size), true);
-            this.summary.parent = this;
 
             for(int i = 0; i < higherSQRT(universe_size); i++) {
                 int r_min = lowerSQRT(this.universe_size) * i + this.range_min;
@@ -222,23 +217,6 @@ public class Node {
 
         }
 
-    }
-
-    private void assignParent(Node parent){
-        if(this.summary != null) {
-            summary.parent = parent;
-            summary.assignParent(summary);
-
-        }
-
-        if(this.children != null) {
-            for(Node child : this.children) {
-                child.parent=parent;
-                child.assignParent(child);
-
-            }
-
-        }
     }
 
     private int clusterNum(int value){
@@ -422,11 +400,12 @@ public class Node {
 
         }
         boolean empty = children[clusterNum(value)].delete(position(value));
+
         if(empty) {
             summary.delete(clusterNum(value));
 
         }
-        
+
         return isEmpty();
     }
 }
