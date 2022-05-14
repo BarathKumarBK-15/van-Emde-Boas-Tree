@@ -1,16 +1,42 @@
-import java.lang.Math.*;
-
+/**
+ * This class is used to create a vEB tree given the universe size
+ * */
 public class Node {
+    /**
+     * Indicates the maximum number of elements the tree can store.
+     * If universe size is u then tree can store values from 0 to u-1
+     */
     public int universe_size;
+
+    /**
+     * Stores the minimum value of the subtree
+     */
     public  int min;
+
+    /**
+     * Stores the maximum value of the subtree
+     */
     public int max;
+
+    /**
+     * Pointer to summary node
+     */
     public Node summary;
+
+    /**
+     * Pointer array to child cluster. Size of array equals to lowerSQRT(universe_size)
+     */
     public Node[] children;
+
+    /**
+     * Boolean value to indicate if a node is summary node or not
+     */
     public boolean is_summary;
+
     public int range_min;
     public int range_max;
 
-    Node() {
+    private Node() {
         universe_size = 0;
         min = -1;
         max = -1;
@@ -22,6 +48,9 @@ public class Node {
 
     }
 
+    /**
+     * Creates empty vEB tree with specified universe_size
+     */
     Node(int universe_size) {
         this.universe_size = universe_size;
         this.min = -1;
@@ -47,7 +76,7 @@ public class Node {
         }
     }
 
-    Node(int universe_size, int range_min, int range_max) {
+    private Node(int universe_size, int range_min, int range_max) {
         this.universe_size = universe_size;
         this.min = -1;
         this.max = -1;
@@ -73,7 +102,7 @@ public class Node {
 
     }
 
-    Node(int universe_size, boolean is_summary) {
+    private Node(int universe_size, boolean is_summary) {
         this.universe_size = universe_size;
         this.min = -1;
         this.max = -1;
@@ -134,6 +163,9 @@ public class Node {
 
     }
 
+    /**
+     * Prints the values present in the vEB tree. -1 indicates empty value or null
+     */
     public void print() {
         System.out.println("\n========================================\n");
 
@@ -167,10 +199,15 @@ public class Node {
 
     }
 
+    /**
+     * Inserts value into vEB tree and updates summary node, does not check if value is already present in the tree.
+     * @param value value to insert in the tree. if value is not in
+     *      the range of 0 to universe_size-1 then ArrayIndexOutOfBoundsException is thrown
+     * */
     public void insert(int value) {
         if(value < 0 || value >= this.universe_size) {
-            System.out.println("<-- Invalid entry. Value cannot be inserted -->");
-            return;
+            throw new ArrayIndexOutOfBoundsException("The range of values should be between "
+                    + this.range_min + " - " + this.range_max);
 
         }
 
@@ -219,21 +256,35 @@ public class Node {
 
     }
 
+    /**
+     * Returns the child cluster in which value is present.
+     */
     private int clusterNum(int value){
         return value/lowerSQRT(universe_size);
 
     }
 
+    /**
+     * returns the position of value in the child cluster
+     */
     private int position(int value){
         return value%lowerSQRT(universe_size);
 
     }
 
+    /**
+     * @return integer value that indicates the minimum value present
+     * in the tree, -1 if tree is empty
+     */
     public int getMin(){
         return this.min;
 
     }
 
+    /**
+     * @return integer value that indicates the maximum value present
+     * in the tree, -1 if tree is empty
+     */
     public int getMax(){
         return this.max;
 
@@ -258,6 +309,12 @@ public class Node {
         return this.children[clusterNum(value)].search(position(value));
     }
 
+    /**
+     * Returns the predecessor of the given value (value need not be present in the tree). The function does not
+     * check if the value is present in the tree or not. If the value not present in the tree
+     * then the function returns the predecessor such that the value is present in the tree.
+     * @return integer value indicating the predecessor, -1 if no predecessor
+     */
     public int predecessor(int value) {
         if(value < 0 || value > range_max) {
             throw new ArrayIndexOutOfBoundsException("The range of values should be between "
@@ -301,6 +358,12 @@ public class Node {
         return pred + (start_num+ 1 ) * lowerSQRT(universe_size);
     }
 
+    /**
+     * Returns the successor of the given value (value need not be present in the tree). The function does not
+     * check if the value is present in the tree or not. If the value not present in the tree
+     * then the function returns the successor such that the value is present in the tree.
+     * @return  integer value indicating the successor, -1 if no successor
+     */
     public int successor(int value) {
         if(value < 0 || value > range_max) {
             throw new ArrayIndexOutOfBoundsException("The range of values should be between "
@@ -344,6 +407,9 @@ public class Node {
         return successor + (start_num - 1) * lowerSQRT(universe_size);
     }
 
+    /**
+     * @return true if entire tree is empty
+     */
     public boolean isEmpty() {
         if(min != -1) {
             return false;
@@ -360,6 +426,12 @@ public class Node {
         return true;
     }
 
+    /**
+     * Deletes the specified value from the tree. Function does not check if
+     * the value is present in the tree before deleting the value.If the
+     * value is not present in the tree no error is thrown.
+     * @return true if the tree empty, false otherwise
+     * */
     public boolean delete(int value){
         if(value > max || value < min){
             return false;
